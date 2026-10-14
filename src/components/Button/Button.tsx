@@ -42,7 +42,7 @@ export function Button({
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={labelColor} accessibilityElementsHidden importantForAccessibility="no" />
+        <ActivityIndicator color={labelColor} aria-hidden />
       ) : (
         <Text style={[styles.label, { color: labelColor }]}>{label}</Text>
       )}
