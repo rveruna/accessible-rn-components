@@ -29,6 +29,7 @@ describe('requiredRatio', () => {
 describe('design token palette', () => {
   const pairs: [string, string, string][] = [
     ['body text', colors.text, colors.background],
+    ['read-only field text', colors.text, colors.surfaceMuted],
     ['muted text', colors.textMuted, colors.background],
     ['primary button label', colors.onPrimary, colors.primary],
     ['secondary button label', colors.primary, colors.background],

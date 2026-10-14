@@ -36,7 +36,7 @@ export function TextField({
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
         editable={editable}
-        style={[styles.input, error ? styles.inputError : undefined, !editable && styles.inputDisabled]}
+        style={[styles.input, error ? styles.inputError : undefined, !editable && styles.inputReadOnly]}
       />
       {error ? (
         <Text role="alert" accessibilityLiveRegion="polite" style={styles.error}>
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   inputError: { borderColor: colors.error },
-  inputDisabled: { opacity: 0.6 },
+  inputReadOnly: { backgroundColor: colors.surfaceMuted },
   helper: { fontSize: fontSize.label, color: colors.textMuted },
   error: { fontSize: fontSize.label, color: colors.error },
 });
