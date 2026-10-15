@@ -7,9 +7,10 @@
 
 [![Keyboard-only walkthrough of the example form: Tab moves a visible focus ring through the email field, toggle and buttons, Space switches the toggle on, an invalid email shows an inline error, and once it is fixed, saving shows a spinner and then a success banner](docs/demo.gif)](https://rveruna.github.io/accessible-rn-components/)
 
-A small React Native component library (Button, TextField, Toggle, Banner) built to show how I approach
-accessibility, testing and design systems: accessibility is checked at four levels, and the checks are
-themselves tested.
+A small React Native component library built to show how I approach accessibility, testing and design
+systems. Four simple components (Button, TextField, Toggle, Banner) and four harder ones, where accessibility
+usually goes wrong (Dialog, Slider, Tabs, RadioGroup). Accessibility is checked at five levels, and the
+checks are themselves tested.
 
 | | | |
 |---|---|---|
@@ -25,26 +26,34 @@ themselves tested.
 | `TextField` | Visible label doubles as the accessible name, helper text or error used as the hint, error announced as an alert and the field marked invalid, read-only state keeps full text contrast |
 | `Toggle` | Role `switch` with checked state, the whole row is the touch target, disabled state announced |
 | `Banner` | Errors are announced assertively as alerts, other messages politely as status, meaning is carried by text as well as colour |
+| `Dialog` | On web: role `dialog`, named by its title, focus moved in on open, Tab kept inside, Escape closes, focus returned to the opener. On iOS and Android: screen reader focus moved to the title, `accessibilityViewIsModal`, Android back closes. A tap outside closes it too, but the backdrop is never focusable |
+| `Slider` | Role `slider` (adjustable on iOS) with min, max and the value in words (`£150`, not `150`); VoiceOver and TalkBack swipe actions; arrow, Page and Home/End keys on web; drag anywhere on a 44pt strip; when disabled only the track fades, so the label keeps full contrast |
+| `Tabs` | Tab list with `tab` roles and selected state; one tab stop, arrow keys move and select with wrapping, Home/End; each panel labelled by its tab; selection shown by weight and an underline, not colour alone |
+| `RadioGroup` | Group named by its question (shown once, read once); radios with checked state; one tab stop, arrows move and choose, Space chooses; an error is announced as an alert and marks the group invalid |
 | Design tokens | Every text and background colour pair is checked against WCAG AA in the tests |
 
 ## How it is tested
 
-1. **Unit tests** with React Native Testing Library, written against roles and accessible names, not implementation details (41 tests, 100% statement and line coverage, enforced by a coverage threshold).
+1. **Unit tests** with React Native Testing Library, written against roles and accessible names, not implementation details (104 tests, 100% line coverage, enforced by a coverage threshold).
 2. **Contrast tests** that compute WCAG contrast ratios for every colour pair in the design tokens.
-3. **Browser audit**: `npm run a11y-audit` builds Storybook and runs axe-core (WCAG 2.0 to 2.2, A and AA rules) in Chromium against all 15 stories. Currently 0 violations.
-4. **Mutation check**: `npm run mutation-check` deliberately breaks 11 accessibility rules one at a time and confirms the test suite fails each time (11 of 11 caught).
+3. **Browser audit**: `npm run a11y-audit` builds Storybook and runs axe-core (WCAG 2.0 to 2.2, A and AA rules) in Chromium against all 26 stories. Currently 0 violations.
+4. **Keyboard check**: `npm run keyboard-check` uses the built Storybook in Chromium with a real keyboard and mouse: where focus goes when the dialog opens and closes, that Tab stays inside it, that tabs and radio groups are one tab stop, and what each key does to the slider (24 checks).
+5. **Mutation check**: `npm run mutation-check` deliberately breaks 27 accessibility rules one at a time and confirms the test suite fails each time (27 of 27 caught).
 
-All four run in CI.
+All five run in CI.
 
 ## What the checks found
 
 - **The browser audit caught three real bugs that the unit tests did not.** The loading spinner exposed an unnamed `progressbar` on web (the native-only hiding props are ignored there), the read-only field used opacity and dropped below AA contrast, and the `switch` role on web needs `aria-checked`, which `accessibilityState` alone did not provide. I fixed all three and the audit now guards them: reintroducing the spinner bug makes it fail.
 - **The mutation check found redundant code.** One mutation (removing `disabled` from the button's accessibility state) survived because `Pressable` already derives that state from its `disabled` prop. The line was redundant, not under-tested, so I deleted it.
 - **A `View` with a role is not an accessibility element unless it is marked `accessible`.** The Banner tests failed until I added it, which is exactly the kind of bug a screen reader user would hit.
+- **The keyboard check caught two bugs that the unit tests and axe both missed.** Every tab and radio button was its own tab stop, because react-native-web's `Pressable` ignores `focusable={false}` ([decision 0004](docs/decisions/0004-one-tab-stop-for-tabs-and-radio-groups.md)). And opening the dialog put focus on the invisible tap-outside backdrop, because the web focus trap focuses anything that accepts focus ([decision 0005](docs/decisions/0005-let-react-native-web-handle-dialog-focus.md)). Putting the first bug back makes the check fail.
+- **The browser audit caught the disabled slider fading its label below AA contrast.** Only the track fades now, the same lesson as the read-only text field.
+- **The mutation check found a test that could not fail.** Removing the slider's "ignore input while disabled" guard survived, because Testing Library never fires events on a disabled element. A screen reader can still send increment to a dimmed slider, so the guard stays and the test now calls the handler directly.
 
 ## Practices
 
-- **CI on every push:** lint, a Prettier check, an audit of production dependencies (high severity and above), the type-check, the tests with coverage, the mutation check and the browser accessibility audit.
+- **CI on every push:** lint, a Prettier check, an audit of production dependencies (high severity and above), the type-check, the tests with coverage, the mutation check, the browser accessibility audit and the keyboard check.
 - **Before every commit:** a Husky hook formats and lints the staged files.
 - **Kept current and watched:** Dependabot groups weekly updates, and CodeQL scans every push.
 - **Decisions are written down:** [docs/decisions](docs/decisions) records the choices that were not obvious, with their evidence, including [what each level of accessibility checking catches and misses](docs/decisions/0001-check-accessibility-in-a-real-browser.md).
@@ -62,9 +71,10 @@ npm run typecheck
 npm run storybook       # http://localhost:6006, with the accessibility panel
 npm run mutation-check
 npm run a11y-audit      # builds Storybook, audits every story in Chromium
+npm run keyboard-check  # builds Storybook, drives it with a keyboard and mouse in Chromium
 ```
 
-`App.tsx` is a small demo screen that uses all four components (`npm run web`).
+`App.tsx` is a small demo screen that uses the four simple components (`npm run web`); the harder ones are in Storybook.
 
 ## Limits and next steps
 
@@ -72,7 +82,8 @@ npm run a11y-audit      # builds Storybook, audits every story in Chromium
   real problems, so VoiceOver and TalkBack behaviour still needs manual testing on devices, which I
   have not automated here.
 - The palette is a demo, not a brand system. Dark mode and dynamic type scaling are not covered yet.
-- Next: a `Select` and a modal with focus management, which is where accessibility usually gets hard.
+- The keyboard check covers web. VoiceOver and TalkBack on the new components (the swipe actions, focus moving to the dialog title) are covered by unit tests only, not on devices.
+- Next: a `Select` (combobox), the hardest common pattern left.
 
 ## Stack
 
