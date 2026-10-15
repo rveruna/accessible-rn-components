@@ -26,7 +26,10 @@ export default function App() {
         <Text role="heading" style={styles.title}>
           Accessible components
         </Text>
-        <Banner kind="info" message="Every colour pair in this palette is checked against WCAG AA in the tests." />
+        <Banner
+          kind="info"
+          message="Every colour pair in this palette is checked against WCAG AA in the tests."
+        />
         <View style={styles.form}>
           <TextField
             label="Email"

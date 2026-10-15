@@ -59,7 +59,9 @@ describe('Button', () => {
   });
 
   it('passes an accessibility hint through', async () => {
-    await render(<Button label="Delete" onPress={jest.fn()} accessibilityHint="Removes this item for good" />);
+    await render(
+      <Button label="Delete" onPress={jest.fn()} accessibilityHint="Removes this item for good" />,
+    );
 
     expect(screen.getByRole('button', { name: 'Delete' })).toHaveProp(
       'accessibilityHint',
