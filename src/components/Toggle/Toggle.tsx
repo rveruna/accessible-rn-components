@@ -11,6 +11,15 @@ export interface ToggleProps {
 
 /** A labelled switch whose whole row is the touch target and announces checked state. */
 export function Toggle({ label, value, onValueChange, disabled = false }: ToggleProps) {
+  // react-native-web only activates role="button" with Space, but the WAI-ARIA switch pattern expects Space too
+  function handleKeyDown(event: { key: string; preventDefault: () => void }) {
+    if (disabled || event.key !== ' ') return;
+    event.preventDefault(); // otherwise Space also scrolls the page
+    onValueChange(!value);
+  }
+  // onKeyDown comes from react-native-web and is not in React Native's types; native platforms ignore it
+  const webKeyProps = { onKeyDown: handleKeyDown } as object;
+
   return (
     <Pressable
       role="switch"
@@ -19,6 +28,7 @@ export function Toggle({ label, value, onValueChange, disabled = false }: Toggle
       aria-disabled={disabled}
       disabled={disabled}
       onPress={() => onValueChange(!value)}
+      {...webKeyProps}
       style={[styles.row, disabled && styles.disabled]}
     >
       <Text style={styles.label}>{label}</Text>
