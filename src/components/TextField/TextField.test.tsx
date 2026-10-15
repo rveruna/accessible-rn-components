@@ -35,7 +35,9 @@ describe('TextField', () => {
   });
 
   it('prefers the error over helper text for the hint and visible message', async () => {
-    await render(<TextField {...baseProps} helperText="We never share your email" error="Enter a valid email" />);
+    await render(
+      <TextField {...baseProps} helperText="We never share your email" error="Enter a valid email" />,
+    );
 
     expect(screen.getByLabelText('Email')).toHaveProp('accessibilityHint', 'Enter a valid email');
     expect(screen.queryByText('We never share your email')).not.toBeOnTheScreen();
