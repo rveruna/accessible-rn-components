@@ -11,7 +11,9 @@ describe('Toggle', () => {
   });
 
   it('announces its checked state', async () => {
-    const { rerender } = await render(<Toggle label="Email reminders" value={false} onValueChange={jest.fn()} />);
+    const { rerender } = await render(
+      <Toggle label="Email reminders" value={false} onValueChange={jest.fn()} />,
+    );
     expect(screen.getByRole('switch', { name: 'Email reminders' })).not.toBeChecked();
 
     await rerender(<Toggle label="Email reminders" value onValueChange={jest.fn()} />);
@@ -50,6 +52,8 @@ describe('Toggle', () => {
   it('makes the whole row a large enough touch target', async () => {
     await render(<Toggle label="Email reminders" value={false} onValueChange={jest.fn()} />);
 
-    expect(screen.getByRole('switch', { name: 'Email reminders' })).toHaveStyle({ minHeight: MIN_TOUCH_TARGET });
+    expect(screen.getByRole('switch', { name: 'Email reminders' })).toHaveStyle({
+      minHeight: MIN_TOUCH_TARGET,
+    });
   });
 });

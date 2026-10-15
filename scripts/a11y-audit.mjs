@@ -7,7 +7,13 @@ import http from 'node:http';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..', 'storybook-static');
-const types = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.css': 'text/css', '.svg': 'image/svg+xml' };
+const types = {
+  '.html': 'text/html',
+  '.js': 'text/javascript',
+  '.json': 'application/json',
+  '.css': 'text/css',
+  '.svg': 'image/svg+xml',
+};
 
 const server = http.createServer((req, res) => {
   const file = path.join(root, decodeURIComponent(new URL(req.url, 'http://x').pathname));
@@ -22,7 +28,9 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const base = `http://127.0.0.1:${server.address().port}`;
 
 const index = JSON.parse(fs.readFileSync(path.join(root, 'index.json'), 'utf8'));
-const ids = Object.entries(index.entries).filter(([, entry]) => entry.type === 'story').map(([id]) => id);
+const ids = Object.entries(index.entries)
+  .filter(([, entry]) => entry.type === 'story')
+  .map(([id]) => id);
 
 const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: 420, height: 300 } });
