@@ -10,14 +10,25 @@ export default function App() {
   const [reminders, setReminders] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
+  // Only true once a save has finished, and cleared by any edit, so the banner never claims an unsaved change
+  const [saved, setSaved] = useState(false);
 
   const error = submitted && !EMAIL_PATTERN.test(email) ? 'Enter a valid email address' : undefined;
 
+  function changeEmail(next: string) {
+    setEmail(next);
+    setSaved(false);
+  }
+
   function handleSubmit() {
     setSubmitted(true);
+    setSaved(false);
     if (!EMAIL_PATTERN.test(email)) return;
     setSaving(true);
-    setTimeout(() => setSaving(false), 1200);
+    setTimeout(() => {
+      setSaving(false);
+      setSaved(true);
+    }, 1200);
   }
 
   return (
@@ -34,15 +45,15 @@ export default function App() {
           <TextField
             label="Email"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={changeEmail}
             helperText="We only use this to send reminders"
             error={error}
           />
           <Toggle label="Email reminders" value={reminders} onValueChange={setReminders} />
           <Button label="Save preferences" onPress={handleSubmit} loading={saving} />
-          <Button label="Cancel" variant="secondary" onPress={() => setEmail('')} />
+          <Button label="Cancel" variant="secondary" onPress={() => changeEmail('')} />
         </View>
-        {submitted && !error && !saving ? <Banner kind="success" message="Preferences saved" /> : null}
+        {saved ? <Banner kind="success" message="Preferences saved" /> : null}
       </ScrollView>
       <StatusBar style="dark" />
     </SafeAreaView>

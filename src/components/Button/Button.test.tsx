@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { MIN_TOUCH_TARGET } from '../../theme/tokens';
+import { colors, MIN_TOUCH_TARGET } from '../../theme/tokens';
 import { Button } from './Button';
 
 describe('Button', () => {
@@ -73,5 +73,16 @@ describe('Button', () => {
     await render(<Button label="Cancel" onPress={jest.fn()} variant="secondary" />);
 
     expect(screen.getByRole('button', { name: 'Cancel' })).toHaveStyle({ borderWidth: 2 });
+  });
+
+  it('draws its own focus ring while focused, so it shows on the blue primary button', async () => {
+    await render(<Button label="Save" onPress={jest.fn()} />);
+    const button = screen.getByRole('button', { name: 'Save' });
+
+    await fireEvent(button, 'focus');
+    expect(button).toHaveStyle({ outlineWidth: 3, outlineColor: colors.text });
+
+    await fireEvent(button, 'blur');
+    expect(button).not.toHaveStyle({ outlineWidth: 3 });
   });
 });
