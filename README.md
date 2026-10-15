@@ -5,6 +5,8 @@
 
 **[Try the components in Storybook](https://rveruna.github.io/accessible-rn-components/)**, with the accessibility panel open.
 
+[![Keyboard-only walkthrough of the example form: Tab moves a visible focus ring through the email field, toggle and buttons, Space switches the toggle on, an invalid email shows an inline error, and once it is fixed, saving shows a spinner and then a success banner](docs/demo.gif)](https://rveruna.github.io/accessible-rn-components/)
+
 A small React Native component library (Button, TextField, Toggle, Banner) built to show how I approach
 accessibility, testing and design systems: accessibility is checked at four levels, and the checks are
 themselves tested.
