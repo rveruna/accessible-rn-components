@@ -24,3 +24,5 @@ jobs:
       - run: npm run mutation-check
       - run: npx playwright install --with-deps chromium
       - run: npm run a11y-audit
+      - name: Keyboard check (reuses the Storybook build from the audit)
+        run: node scripts/keyboard-check.mjs
