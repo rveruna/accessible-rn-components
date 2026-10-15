@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 import { colors, fontSize, MIN_TOUCH_TARGET, spacing } from '../../theme/tokens';
 
@@ -22,6 +22,7 @@ export function Button({
   loading = false,
   accessibilityHint,
 }: ButtonProps) {
+  const [focused, setFocused] = useState(false);
   const inactive = disabled || loading;
   const isPrimary = variant === 'primary';
   const labelColor = isPrimary ? colors.onPrimary : colors.primary;
@@ -34,11 +35,14 @@ export function Button({
       accessibilityState={{ busy: loading }}
       disabled={inactive}
       onPress={onPress}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
       style={({ pressed }) => [
         styles.base,
         isPrimary ? styles.primary : styles.secondary,
         inactive && styles.inactive,
         pressed && styles.pressed,
+        focused && styles.focused,
       ]}
     >
       {loading ? (
@@ -64,5 +68,7 @@ const styles = StyleSheet.create({
   secondary: { backgroundColor: colors.background, borderWidth: 2, borderColor: colors.primary },
   inactive: { opacity: 0.6 },
   pressed: { opacity: 0.85 },
+  // The browser's default blue ring disappears against the blue primary button, so draw a dark one outside it
+  focused: { outlineColor: colors.text, outlineStyle: 'solid', outlineWidth: 3, outlineOffset: 2 },
   label: { fontSize: fontSize.body, fontWeight: '600' },
 });

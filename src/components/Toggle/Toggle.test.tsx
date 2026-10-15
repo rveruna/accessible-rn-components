@@ -49,6 +49,33 @@ describe('Toggle', () => {
     expect(onValueChange).not.toHaveBeenCalled();
   });
 
+  it('flips with the Space key, as the WAI-ARIA switch pattern expects, without scrolling the page', async () => {
+    const onValueChange = jest.fn();
+    const preventDefault = jest.fn();
+    await render(<Toggle label="Email reminders" value={false} onValueChange={onValueChange} />);
+
+    await fireEvent(screen.getByRole('switch', { name: 'Email reminders' }), 'keyDown', {
+      key: ' ',
+      preventDefault,
+    });
+
+    expect(onValueChange).toHaveBeenCalledWith(true);
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it('ignores other keys and ignores Space when disabled', async () => {
+    const onValueChange = jest.fn();
+    const { rerender } = await render(
+      <Toggle label="Email reminders" value={false} onValueChange={onValueChange} />,
+    );
+    await fireEvent(screen.getByRole('switch'), 'keyDown', { key: 'a', preventDefault: jest.fn() });
+
+    await rerender(<Toggle label="Email reminders" value={false} onValueChange={onValueChange} disabled />);
+    await fireEvent(screen.getByRole('switch'), 'keyDown', { key: ' ', preventDefault: jest.fn() });
+
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
   it('makes the whole row a large enough touch target', async () => {
     await render(<Toggle label="Email reminders" value={false} onValueChange={jest.fn()} />);
 
