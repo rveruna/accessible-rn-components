@@ -1,0 +1,7 @@
+coverage
+node_modules
+storybook-static
+package-lock.json
+docs/screenshots
+assets
+*.md
