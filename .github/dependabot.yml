@@ -10,6 +10,40 @@ updates:
         dependency-type: production
       development:
         dependency-type: development
+    # The Expo SDK pins these to versions that work together, so moving to a
+    # new SDK goes through `npx expo install expo@<sdk> --fix`, not a Dependabot
+    # bump. React Native and React minors count as SDK changes, test-renderer
+    # follows the React minor, and Jest follows jest-expo. ESLint and TypeScript
+    # wait until eslint-config-expo's plugins support the next version.
+    ignore:
+      - dependency-name: expo
+        update-types: [version-update:semver-major]
+      - dependency-name: '@expo/*'
+        update-types: [version-update:semver-major]
+      - dependency-name: 'expo-*'
+        update-types: [version-update:semver-major]
+      - dependency-name: eslint-config-expo
+        update-types: [version-update:semver-major]
+      - dependency-name: jest-expo
+        update-types: [version-update:semver-major]
+      - dependency-name: react-native
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: react
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: '@types/react'
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: test-renderer
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: typescript
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: jest
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/jest'
+        update-types: [version-update:semver-major]
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
   - package-ecosystem: github-actions
     directory: /
     schedule:
