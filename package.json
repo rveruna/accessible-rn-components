@@ -47,6 +47,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "a11y-audit": "npm run build-storybook && node scripts/a11y-audit.mjs",
+    "keyboard-check": "npm run build-storybook && node scripts/keyboard-check.mjs",
     "lint": "expo lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
