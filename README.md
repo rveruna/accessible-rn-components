@@ -1,6 +1,9 @@
 # accessible-rn-components
 
 [![CI](https://github.com/rveruna/accessible-rn-components/actions/workflows/ci.yml/badge.svg)](https://github.com/rveruna/accessible-rn-components/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/rveruna/accessible-rn-components/actions/workflows/codeql.yml/badge.svg)](https://github.com/rveruna/accessible-rn-components/actions/workflows/codeql.yml)
+
+**[Try the components in Storybook](https://rveruna.github.io/accessible-rn-components/)**, with the accessibility panel open.
 
 A small React Native component library (Button, TextField, Toggle, Banner) built to show how I approach
 accessibility, testing and design systems: accessibility is checked at four levels, and the checks are
@@ -37,6 +40,14 @@ All four run in CI.
 - **The mutation check found redundant code.** One mutation (removing `disabled` from the button's accessibility state) survived because `Pressable` already derives that state from its `disabled` prop. The line was redundant, not under-tested, so I deleted it.
 - **A `View` with a role is not an accessibility element unless it is marked `accessible`.** The Banner tests failed until I added it, which is exactly the kind of bug a screen reader user would hit.
 
+## Practices
+
+- **CI on every push:** lint, a Prettier check, an audit of production dependencies (high severity and above), the type-check, the tests with coverage, the mutation check and the browser accessibility audit.
+- **Before every commit:** a Husky hook formats and lints the staged files.
+- **Kept current and watched:** Dependabot groups weekly updates, and CodeQL scans every push.
+- **Decisions are written down:** [docs/decisions](docs/decisions) records the choices that were not obvious, with their evidence, including [what each level of accessibility checking catches and misses](docs/decisions/0001-check-accessibility-in-a-real-browser.md).
+- **A clean dependency split:** the library needs only `react` and `react-native`, declared as peer dependencies; everything else is development tooling, so `npm audit --omit=dev` is meaningful.
+
 ## Run it
 
 ```bash
@@ -44,6 +55,7 @@ npm install
 npm test                # unit and contrast tests
 npm run test:coverage   # with coverage thresholds
 npm run lint
+npm run format       # Prettier
 npm run typecheck
 npm run storybook       # http://localhost:6006, with the accessibility panel
 npm run mutation-check
